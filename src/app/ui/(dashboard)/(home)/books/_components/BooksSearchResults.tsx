@@ -55,9 +55,7 @@ export default function BooksSearchResults() {
   });
 
   useEffect(() => {
-    console.log(enabled);
-    console.log(currentPage);
-    if (enabled === false) {
+    if (!enabled) {
       setEnabled(true);
     }
   }, [currentPage]);
