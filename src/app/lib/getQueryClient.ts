@@ -1,21 +1,23 @@
-"use client"
+"use client";
 
 import { QueryClient } from "@tanstack/react-query";
 
-import { useState } from "react";
+import { useMemo } from "react";
 
 export const getQueryClient = () => {
-  const [client] = useState(
-    new QueryClient({
-      defaultOptions: {
-        queries: {
-          refetchOnWindowFocus: false,
-          refetchOnMount: true,
-          refetchOnReconnect: false,
-          retry: false,
+  const client = useMemo(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            refetchOnMount: true,
+            refetchOnReconnect: false,
+            retry: false,
+          },
         },
-      },
-    })
+      }),
+    []
   );
 
   return client;

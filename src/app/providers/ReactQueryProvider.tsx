@@ -11,7 +11,7 @@ export default function ReactQueryProvider({
 }: {
   children: React.ReactNode;
 }) {
-  let client = getQueryClient();
+  const client = getQueryClient();
 
   return (
     <QueryClientProvider client={client}>
