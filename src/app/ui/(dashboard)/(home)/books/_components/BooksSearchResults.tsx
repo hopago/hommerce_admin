@@ -28,6 +28,9 @@ export default function BooksSearchResults() {
     creatorFilterBooks();
   const { currentPage } = useCreatorPagination();
 
+  console.log(currentPage);
+  console.log(enabled);
+
   const {
     data,
     error,
@@ -52,12 +55,16 @@ export default function BooksSearchResults() {
   });
 
   useEffect(() => {
+    console.log(enabled);
+    console.log(currentPage);
     if (enabled === false) {
       setEnabled(true);
     }
   }, [currentPage]);
 
   useEffect(() => {
+    console.log(enabled);
+    console.log(currentPage);
     if (enabled) {
       refetch();
     }
