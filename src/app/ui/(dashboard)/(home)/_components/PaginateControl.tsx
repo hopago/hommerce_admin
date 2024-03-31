@@ -14,7 +14,7 @@ import { useEffect } from "react";
 import { PAGE_THRESHOLD } from "../constants/pagination";
 
 type PaginateControlProps = {
-  pageTotal: number;
+  pageTotal: number | undefined;
 };
 
 export default function PaginateControl({ pageTotal }: PaginateControlProps) {
@@ -34,28 +34,30 @@ export default function PaginateControl({ pageTotal }: PaginateControlProps) {
     handleSetPage(1);
   }, []);
 
-  return (
-    <div className={styles.container}>
-      <PrevPage onPrevPage={handlePrevPage} disabled={prevPageDisabled} />
-      {currentPage > PAGE_THRESHOLD && (
-        <MoveToFirstPage handleMoveToFirstPage={handleMoveToFirstPage} />
-      )}
-      <SetPage
-        currPage={currentPage}
-        total={pageTotal}
-        onSetPage={handleSetPage}
-      />
-      {pageTotal - PAGE_THRESHOLD > currentPage && (
-        <MoveToLastPage
-          pageTotal={pageTotal}
-          handleMoveToLastPage={handleMoveToLastPage}
+  if (pageTotal) {
+    return (
+      <div className={styles.container}>
+        <PrevPage onPrevPage={handlePrevPage} disabled={prevPageDisabled} />
+        {currentPage > PAGE_THRESHOLD && (
+          <MoveToFirstPage handleMoveToFirstPage={handleMoveToFirstPage} />
+        )}
+        <SetPage
+          currPage={currentPage}
+          total={pageTotal}
+          onSetPage={handleSetPage}
         />
-      )}
-      <NextPage
-        onNextPage={handleNextPage}
-        disabled={nextPageDisabled}
-        pageTotal={pageTotal}
-      />
-    </div>
-  );
+        {pageTotal - PAGE_THRESHOLD > currentPage && (
+          <MoveToLastPage
+            pageTotal={pageTotal}
+            handleMoveToLastPage={handleMoveToLastPage}
+          />
+        )}
+        <NextPage
+          onNextPage={handleNextPage}
+          disabled={nextPageDisabled}
+          pageTotal={pageTotal}
+        />
+      </div>
+    );
+  }
 }

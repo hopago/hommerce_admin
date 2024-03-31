@@ -102,9 +102,9 @@ export default function BooksSearchResults() {
             <BookTable
               books={data.books as IBook[]}
               isLoading={isLoading}
-              dataLength={data?.pagination.totalBooks!}
+              dataLength={data?.pagination.totalBooks}
             />
-            <PaginateControl pageTotal={data?.pagination.totalPages!} />
+            <PaginateControl pageTotal={data?.pagination.totalPages} />
           </div>
         </div>
       );
@@ -124,6 +124,10 @@ export const DataTableSkeleton = () => (
   </div>
 );
 
-function isBookData(data: BookData | IBook[]): data is BookData {
-  return (data as BookData).books !== undefined;
+function isBookData(data: BookData) {
+  return (
+    data.books !== undefined &&
+    data.pagination &&
+    typeof data.pagination.totalBooks === "number"
+  );
 }
