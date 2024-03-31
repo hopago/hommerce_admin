@@ -9,7 +9,7 @@ import styles from "./review-log-list.module.css";
 
 export const TableRowSkeleton = () => {
   return (
-    <tr>
+    <>
       <ReviewSelectCheckBoxSkeleton />
       <td>
         <Skeleton className={cn("skeleton", styles.tdSkeleton)} />
@@ -21,6 +21,6 @@ export const TableRowSkeleton = () => {
         <Skeleton className={cn("skeleton", styles.tdSkeleton)} />
       </td>
       <ReviewActionsSkeleton />
-    </tr>
+    </>
   );
 };
