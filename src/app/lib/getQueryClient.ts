@@ -1,10 +1,10 @@
 import { QueryClient } from "@tanstack/react-query";
 
-let client: QueryClient | null = null;
+import { useState } from "react";
 
 export const getQueryClient = () => {
-  if (!client)
-    client = new QueryClient({
+  const [client] = useState(
+    new QueryClient({
       defaultOptions: {
         queries: {
           refetchOnWindowFocus: false,
@@ -13,8 +13,9 @@ export const getQueryClient = () => {
           retry: false,
         },
       },
-    });
-    
+    })
+  );
+
   return client;
 };
 
