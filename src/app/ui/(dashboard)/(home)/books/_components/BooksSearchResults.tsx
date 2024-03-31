@@ -54,7 +54,9 @@ export default function BooksSearchResults() {
   });
 
   useEffect(() => {
+    console.log("리패칭 확인", enabled);
     if (enabled) {
+      console.log("리패칭 실행 확인", enabled);
       queryClient.invalidateQueries({
         queryKey: [QueryKeys.BOOK, currentPage],
       });
@@ -62,13 +64,16 @@ export default function BooksSearchResults() {
     }
   }, [enabled, sort]);
 
+  console.log("로딩", isLoading);
+  console.log("성공", isSuccess);
+
   useEffect(() => {
     if (isSuccess) {
       setEnabled(false);
     }
   }, [isSuccess]);
 
-  useHandleError({ error, isError, fieldName: "리뷰" });
+  useHandleError({ error, isError, fieldName: "도서" });
 
   const { scrollRef } = useScrollRef({ currentPage });
 
