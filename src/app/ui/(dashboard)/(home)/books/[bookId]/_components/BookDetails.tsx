@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { cache } from "react";
-
 import styles from "./book-info.module.css";
 
 import { HttpError } from "@/app/fetcher/error";
@@ -19,7 +17,7 @@ export const preload = (bookId: string) => {
   void getBookDetails(bookId);
 };
 
-export const getBookDetails = cache(async (bookId: string) => {
+export const getBookDetails = async (bookId: string) => {
   try {
     const details = await handleGetBookDetails(bookId);
 
@@ -43,7 +41,7 @@ export const getBookDetails = cache(async (bookId: string) => {
       throw new Error("서버 에러입니다. 잠시 후 다시 시도해주세요.");
     }
   }
-});
+};
 
 type BookDetailsProps = {
   bookId: string;

@@ -1,9 +1,8 @@
 import { QueryClient } from "@tanstack/react-query";
 
-import { cache } from "react";
+let client: QueryClient | null = null;
 
-export const getQueryClient = cache(() => {
-  let client: QueryClient | null = null;
+export const getQueryClient = () => {
   if (!client)
     client = new QueryClient({
       defaultOptions: {
@@ -15,8 +14,9 @@ export const getQueryClient = cache(() => {
         },
       },
     });
+    
   return client;
-});
+};
 
 export const QueryKeys = {
   USER: "user",

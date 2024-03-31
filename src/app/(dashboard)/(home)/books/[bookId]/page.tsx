@@ -1,7 +1,5 @@
 import { getSingleBook } from "@/app/services/getBook";
 
-import { cache } from "react";
-
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 
 import BookInfo from "@/app/ui/(dashboard)/(home)/books/[bookId]/_components/BookInfo";
@@ -13,7 +11,7 @@ export const preload = (bookId: string) => {
   void getBook(bookId);
 };
 
-export const getBook = cache(async (bookId: string) => {
+export const getBook = async (bookId: string) => {
   try {
     const book = await getSingleBook(bookId);
 
@@ -37,7 +35,7 @@ export const getBook = cache(async (bookId: string) => {
       throw new Error("서버 에러입니다. 잠시 후 다시 시도해주세요.");
     }
   }
-});
+};
 
 export default async function Book({ params }: Params) {
   const { bookId } = params;
