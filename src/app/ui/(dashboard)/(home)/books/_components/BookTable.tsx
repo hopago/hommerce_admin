@@ -16,7 +16,7 @@ import { Skeleton } from "@nextui-org/react";
 import { cn } from "@/app/ui/lib/utils";
 
 type BookTableProps = {
-  books: IBook[];
+  books: IBook[] | undefined;
   isLoading: boolean;
   dataLength: number;
 };

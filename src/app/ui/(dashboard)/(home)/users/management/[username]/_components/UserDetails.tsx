@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 import ApiRefetch from "../../../../@modal/api-refetch/ApiRefetch";
@@ -24,6 +24,12 @@ import UserLogs, { UserLogsSkeleton } from "./UserLogs";
 export default function UserDetails() {
   const username = getUsernameByPath();
 
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const {
     data,
     error,
@@ -39,9 +45,11 @@ export default function UserDetails() {
     gcTime: daysToMs(3),
   });
 
-  if (isLoading) return <UserDetailsSkeleton />;
-
   useHandleError({ error, isError, isRefetchError, fieldName: "유저" });
+
+  if (!isClient) return null;
+
+  if (isLoading) return <UserDetailsSkeleton />;
 
   if (!data) return null;
 

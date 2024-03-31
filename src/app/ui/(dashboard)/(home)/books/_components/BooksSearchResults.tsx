@@ -21,7 +21,7 @@ import { NoContent } from "../../users/management/[username]/_components/NoConte
 import { Skeleton } from "@nextui-org/react";
 import { cn } from "@/app/ui/lib/utils";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function BooksSearchResults() {
   const { sort, filter, searchTerm, enabled, setEnabled } =
@@ -71,6 +71,14 @@ export default function BooksSearchResults() {
   useHandleError({ error, isError, fieldName: "리뷰" });
 
   const { scrollRef } = useScrollRef({ currentPage });
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
 
   if (isLoading) return <DataTableSkeleton />;
 

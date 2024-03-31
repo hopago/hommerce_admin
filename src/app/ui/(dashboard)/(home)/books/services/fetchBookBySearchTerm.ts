@@ -51,11 +51,6 @@ export const fetchBookBySearchTerm = ({
   const queryString = createQueryString(queryParams);
   path += `?${queryString}`;
 
-  if (pageNum) {
-    const pageNumQueryString = `pageNum=${pageNum}`;
-    path += `&${pageNumQueryString}`;
-  }
-
   return reactQueryFetcher<BookData>({
     method: "GET",
     path,
