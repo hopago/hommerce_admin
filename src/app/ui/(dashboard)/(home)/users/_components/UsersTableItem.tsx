@@ -31,14 +31,12 @@ export default function UsersTableItem({ user }: UsersTableItemProps) {
       <td>{user.grade}</td>
       <td>{user.status}</td>
       <td>
-        <Link href={`/users/${user._id}`}>
-          <Button
-            type="button"
-            text="관리하기"
-            className="manage"
-            onClick={onClick}
-          />
-        </Link>
+        <Button
+          type="button"
+          text="관리하기"
+          className="manage"
+          onClick={onClick}
+        />
       </td>
     </tr>
   );

@@ -28,11 +28,6 @@ export default function BooksSearchResults() {
     creatorFilterBooks();
   const { currentPage } = useCreatorPagination();
 
-  const queryClient = getQueryClient();
-
-  console.log("페이지 확인", currentPage);
-  console.log("enabled 초기 상태", enabled);
-
   const {
     data,
     error,
@@ -57,19 +52,13 @@ export default function BooksSearchResults() {
   });
 
   useEffect(() => {
-    console.log("페이지 바뀔 때 enabled", enabled);
-    if (enabled === false && currentPage !== 1) {
+    if (enabled === false) {
       setEnabled(true);
     }
   }, [currentPage]);
 
   useEffect(() => {
-    console.log("리패칭 확인", enabled);
     if (enabled) {
-      console.log("리패칭 실행 확인", enabled);
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.BOOK, currentPage],
-      });
       refetch();
     }
   }, [enabled, currentPage, sort]);
