@@ -30,6 +30,7 @@ export default function BooksSearchResults() {
 
   const queryClient = getQueryClient();
 
+  console.log("페이지 확인", currentPage);
   console.log("enabled 초기 상태", enabled);
 
   const {
@@ -57,7 +58,7 @@ export default function BooksSearchResults() {
 
   useEffect(() => {
     console.log("페이지 바뀔 때 enabled", enabled);
-    if (enabled === false) {
+    if (enabled === false && currentPage !== 1) {
       setEnabled(true);
     }
   }, [currentPage]);
@@ -72,9 +73,6 @@ export default function BooksSearchResults() {
       refetch();
     }
   }, [enabled, currentPage, sort]);
-
-  console.log("로딩", isLoading);
-  console.log("성공", isSuccess);
 
   useEffect(() => {
     if (isSuccess) {
