@@ -4,12 +4,23 @@ import UserProfile from "./UserProfile";
 import Button from "../../_components/Button";
 
 import { getFullDate } from "@/app/ui/lib/utils";
+import { useManageUsers } from "@/app/store/use-manage-users";
+import { useRouter } from "next/navigation";
 
 type UsersTableItemProps = {
   user: UserInfo;
 };
 
 export default function UsersTableItem({ user }: UsersTableItemProps) {
+  const { addUsername } = useManageUsers();
+
+  const router = useRouter();
+
+  const onClick = () => {
+    addUsername(user._id);
+    router.push("/users/management");
+  };
+
   return (
     <tr>
       <td>
@@ -21,7 +32,12 @@ export default function UsersTableItem({ user }: UsersTableItemProps) {
       <td>{user.status}</td>
       <td>
         <Link href={`/users/${user._id}`}>
-          <Button type="button" text="관리하기" className="manage" />
+          <Button
+            type="button"
+            text="관리하기"
+            className="manage"
+            onClick={onClick}
+          />
         </Link>
       </td>
     </tr>
