@@ -1,0 +1,32 @@
+.container {
+    padding: 1rem;
+    padding-left: 0;
+}
+
+.wrapper {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--bgSoft);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    color: var(--text);
+}

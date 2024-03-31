@@ -1,0 +1,117 @@
+.select {
+  position: relative;
+  z-index: 9;
+}
+
+.select.postLogs,
+.select.reviewSort {
+    width: 120px;
+}
+
+.select.filterReview {
+    width: 180px;
+    height: 33px;
+    margin-right: 0.5rem;
+}
+
+.select.select.bookEdit {
+    width: 180px;
+}
+
+.selectWrap {
+    width: 100%;
+    height: 100%;
+    padding: 0.25rem 0.5rem;
+    background-color: #3A4E7A;
+    border: none;
+    color: var(--text);
+    font-size: 15px;
+}
+
+.textWrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.selectList {
+    border-top: 1px solid var(--textSoft);
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background-color: #3A4E7A;
+    animation: fadeUp 0.15s ease-out forwards;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    overflow: hidden;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.selectList.postLogs,
+.selectList.reviewSort {
+    width: 120px;
+}
+
+.selectList.reviewSort {
+    background-color: #414B5D;
+}
+
+.selectList.filterReview {
+    width: 180px;
+    top: 34px;
+}
+
+.selectList.bookEdit {
+    width: 180px;
+    max-height: 210px;
+    overflow: auto;
+}
+
+.selectList.bookEdit::-webkit-scrollbar {
+    display: none;
+}
+
+.selectList.bookEdit {
+    scrollbar-width: none;
+}
+
+.selectItem {
+    cursor: pointer;
+    transition: all .15s ease;
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.selectItem button,
+.selectItem button span {
+    width: 100%;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: -0.01em;
+    line-height: 18px;
+    color: var(--textSoft);
+    text-align: left;
+}
+
+.selectItem:hover {
+    background-color: var(--bgSoft);
+    color: var(--text);
+}
+
+.selectItem:hover.selectItem button span {
+    color: var(--text);
+}
+
+.selectList.reviewSort > .selectItem:hover {
+    background-color: #505A6B;
+}

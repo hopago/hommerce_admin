@@ -1,0 +1,335 @@
+.bookInfo {
+    width: calc(100% - 1rem);
+}
+
+.bookInfoWrap {
+    padding: 1rem;
+    background-color: var(--bgSoft);
+    border-radius: 0.5rem;
+}
+
+.bookInfoHeader {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--divider);
+    margin-bottom: 1rem;
+}
+
+.headerTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.headerButton button {
+    font-weight: bold;
+}
+
+.fill {
+    width: 0.5rem;
+    height: 25px;
+    background-color: #4EFDC9;
+    border-radius: 1rem;
+}
+
+.bookInfoDetails {
+    display: flex;
+    gap: 1.5rem;
+    width: 100%;
+    padding: 1rem;
+    background-color: #151C2C;
+    border-radius: 0.5rem;
+}
+
+.bookImg {
+    object-fit: contain;
+}
+
+.bookInfoDetailsTexts {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.bookDesc {
+    flex: 1;
+    width: 100%;
+}
+
+.bookDescFlexWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.5rem;
+    background-color: #24324D;
+    border-radius: 0.5rem;
+}
+
+.optionalDetailsContainer {
+    width: 100%;
+    padding: 1rem;
+    background-color: #151C2C;
+}
+
+.infoTextContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.infoTextContainer h3 {
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    line-height: 18px;
+}
+
+.infoTextContainer p {
+    font-size: 14px;
+    color: var(--textSoft);
+}
+
+.detailsCardContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #191D27;
+    border-radius: 0.5rem;
+}
+
+.detailsCardContainer p {
+    font-size: 14px;
+    color: var(--textSoft);
+    letter-spacing: -0.01em;
+    line-height: 16px;
+}
+
+.cardDetailsContainer {
+    width: 100%;
+    padding: 1.5rem 1rem;
+    background-color: #191D27;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1.5rem;
+    gap: 1.5rem;
+    border-radius: 0.5rem;
+}
+
+.card {
+    width: 100%;
+}
+
+.cardWrap {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: #36383C;
+}
+
+.cardWrapHeader {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.detailsCardWrap h3 {
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    line-height: 18px;
+}
+
+.detailsCardWrap span {
+    color: var(--textSoft);
+}
+
+.detailsCardWrap span:first-of-type {
+    margin-right: 0.25rem;
+}
+
+.imagesContainer {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+}
+
+.imgList {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.imgList img {
+    width: 100%;
+    height: 100%;
+}
+
+.imgMutate {
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background-color: #191D27;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    transition: all .3s ease;
+}
+
+.mutateTexts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mutateTexts span {
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    line-height: 18px;
+    color: var(--textSoft);
+}
+
+.imgList:hover .imgMutate {
+    opacity: 0.9;
+}
+
+.bookImageUpload {
+    width: 100%;
+    height: 100%;
+}
+
+.bookImageUpload label {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background-color: #36383C;
+    min-width: 140px;
+    min-height: 240px;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all .3s ease;
+    color: var(--textSoft);
+}
+
+.bookImageUpload label span {
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    line-height: 18px;
+}
+
+.bookImageUpload label:hover {
+    background-color: #74777B;
+    color: var(--text);
+}
+
+.noContent {
+    width: 100%;
+    min-height: 281px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 3rem;
+    background-color: #151C2C;
+    border-radius: 0.5rem;
+}
+
+.noContent p {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+    line-height: 16px;
+}
+
+.detailsContents {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3rem;
+}
+
+.detailsInfoContainer {
+    width: 100%;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--divider);
+}
+
+.detailsInfoContainer h3 {
+    margin: 0.5rem 0px;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+}
+
+.detailsInfoContainer p {
+    font-size: 15px;
+    line-height: 23px;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    white-space: pre-wrap;
+}
+
+.contextContainer {
+    width: max-content;
+    height: max-content;
+    z-index: 999;
+}
+
+.contextContainer button {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    background-color: var(--error);
+    color: var(--text);
+    transition: all .15s ease;
+}
+
+.contextContainer button span {
+    font-weight: bold;
+    letter-spacing: -0.01em;
+    line-height: 18px;
+}
+
+.contextContainer button:hover {
+    background-color: #FF507A;
+}
+
+.loadingIcon {
+    animation: spin 1s infinite linear;
+    margin-bottom: 0.25rem;
+}
+
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}

@@ -1,0 +1,82 @@
+.button {
+    padding: 0.5rem;
+    background-color: var(--textPurple);
+    color: var(--text);
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    align-items: center;
+}
+
+.iconWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button.manage {
+    padding: 0.5rem;
+    background-color: var(--textPurple);
+    color: var(--text);
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.button.close {
+    position: absolute;
+    top: 0;
+    right: -3.5%;
+    background-color: #E4E6EB;
+    border: none;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    font-weight: bold;
+    color: #000;
+    border-radius: 50%;
+    border: 1px solid #000;
+    transition: all .3s ease;
+    align-items: center;
+    justify-content: center;
+}
+
+.button.close:hover {
+    background-color: #242526;
+    border: 1px solid transparent;
+    color: var(--text);
+}
+
+.button.selectAll {
+    width: 21px;
+    height: 21px;
+    align-items: center;
+    justify-content: center;
+    color: var(--textPurple);
+    background-color: var(--text);
+    transition: all .15s ease;
+}
+
+.button.selectAll.active {
+    background-color: var(--textPurple);
+    color: var(--text);
+}
+
+.button.reviewAction {
+    width: max-content;
+}
+
+.button.pointAction {
+    justify-content: flex-end;
+}
+
+.button.imgUpload {
+    position: absolute;
+    top: 7%;
+    right: -3.5%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

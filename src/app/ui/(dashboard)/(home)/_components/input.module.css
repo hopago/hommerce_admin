@@ -1,0 +1,46 @@
+.input {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    color: var(--text);
+    outline: none;
+    transition: width .3s ease;
+}
+
+.input:focus {
+    width: 420px;
+}
+
+.input.prepare {
+    width: 100%;
+    border: 1px solid rgba(255,255,255,.15);
+    padding: 0.5rem;
+    background-color: #323436;
+    border-radius: 0.5rem;
+}
+
+.input.prepare:focus {
+    outline: 1px solid #47494A;
+}
+
+.input.userSearch {
+    padding: 0px 0.5rem;
+}
+
+.input.userSearch:focus {
+    width: inherit;
+}
+
+.input.filterReview {
+    flex: 1;
+    border: 1px solid rgba(255,255,255,.15);
+    padding: 0.5rem;
+    background-color: #3A4E7A;
+    border-radius: 0.5rem;
+    color: var(--text);
+    margin-right: 0.5rem;
+}
+
+.input.filterReview::placeholder {
+    color: var(--text);
+}

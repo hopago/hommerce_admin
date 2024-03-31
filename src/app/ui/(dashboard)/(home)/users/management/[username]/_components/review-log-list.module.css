@@ -1,0 +1,138 @@
+.container {
+    width: 100%;
+}
+
+.wrap {
+    width: 100%;
+    min-height: 563px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: #191D27;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.wrap.noContent {
+    width: 100%;
+    height: 563px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reviewControlPanel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 34px;
+}
+
+.wrap table {
+    border-collapse: collapse;
+}
+
+.wrap table tr {
+    border-bottom: 1px solid #414B5D;
+    height: max-content;
+}
+
+.tableWrap table tr:last-of-type {
+    border: none;
+}
+
+.wrap table td,
+.wrap table th {
+    padding: 1rem 0.5rem;
+    height: 100%;
+}
+
+.wrap table td {
+    max-width: 315px;
+    white-space: normal;
+    word-break: break-all;
+    font-size: 15px;
+    line-height: 23px;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+}
+
+.reviewActions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.moreVert,
+.close {
+    cursor: pointer;
+}
+
+.close {
+    margin-top: 5px;
+    width: 21px;
+}
+
+.reviewActionsButtons {
+    position: absolute;
+    top: 1rem;
+    right: -4.7rem;
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #28303F;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.tdIconSkeleton {
+    width: 100%;
+    height: 21px;
+}
+
+.noContent {
+    font-size: 1.3rem;
+    font-weight: bold;
+    letter-spacing: -0.01em;
+    line-height: 18px;
+    padding-bottom: 0.5rem;
+}
+
+.loadingIcon {
+    animation: spin 1s infinite linear;
+    margin-bottom: 0.25rem;
+}
+
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+.titleSkeleton {
+    width: 130px;
+    height: 32px;
+}
+
+.selectSkeleton {
+    width: 120px;
+    height: 32px;
+}
+
+.tdButtonSkeleton {
+    width: 80%;
+    height: 34px;
+}
+
+.tdSkeleton {
+    width: 80%;
+    height: 34px;
+}
