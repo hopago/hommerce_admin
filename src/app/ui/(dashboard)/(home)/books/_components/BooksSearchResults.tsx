@@ -10,7 +10,7 @@ import { creatorFilterBooks } from "@/app/store/use-filter";
 import { useCreatorPagination } from "@/app/store/use-pagination";
 import { useScrollRef } from "../../hooks/use-scroll-ref";
 
-import { QueryKeys, getQueryClient } from "@/app/lib/getQueryClient";
+import { QueryKeys } from "@/app/lib/getQueryClient";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBookBySearchTerm } from "../services/fetchBookBySearchTerm";
 import { daysToMs } from "../../utils/daysToMs";
@@ -30,8 +30,6 @@ export default function BooksSearchResults() {
 
   console.log("업데이트", enabled);
   console.log("페이지", currentPage);
-
-  const queryClient = getQueryClient();
 
   const {
     data,
@@ -61,18 +59,10 @@ export default function BooksSearchResults() {
   }, [currentPage, sort]);
 
   useEffect(() => {
-    console.log("useEffect 업데이트", enabled);
-    console.log("useEffect 페이지", currentPage);
     if (enabled) {
-      const refetchQueries = async () => {
-        await queryClient.refetchQueries({
-          queryKey: [QueryKeys.BOOK, currentPage],
-        });
-      };
-
-      refetchQueries();
+      refetch();
     }
-  }, [enabled, sort, filter, searchTerm]);
+  }, [enabled]);
 
   useEffect(() => {
     if (isSuccess) {
