@@ -60,11 +60,15 @@ export default function BooksSearchResults() {
     console.log("useEffect 업데이트", enabled);
     console.log("useEffect 페이지", currentPage);
     if (enabled) {
-      queryClient.refetchQueries({
-        queryKey: [QueryKeys.BOOK, currentPage],
-      });
+      const refetchQueries = async () => {
+        await queryClient.refetchQueries({
+          queryKey: [QueryKeys.BOOK, currentPage],
+        });
+      };
+
+      refetchQueries().catch(console.error);
     }
-  }, [sort, filter, searchTerm]);
+  }, [enabled, currentPage, sort, filter, searchTerm]);
 
   useEffect(() => {
     if (isSuccess) {
