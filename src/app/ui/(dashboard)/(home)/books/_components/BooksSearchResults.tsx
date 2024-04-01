@@ -114,7 +114,10 @@ export default function BooksSearchResults() {
               isLoading={isLoading}
               dataLength={data?.pagination.totalBooks}
             />
-            <PaginateControl pageTotal={data?.pagination.totalPages} />
+            <PaginateControl
+              pageTotal={data?.pagination.totalPages}
+              initPage={1}
+            />
           </div>
         </div>
       );

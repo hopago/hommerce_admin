@@ -21,7 +21,6 @@ export default function SetPageButton({
 
   return (
     <button
-      key={page}
       className={cn(styles.setPageButton, page === currPage && styles.active)}
       onClick={() => onClick(page)}
       disabled={setPageDisabled(page)}

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useCreatorPagination } from "@/app/store/use-pagination";
 
@@ -15,9 +15,13 @@ import { PAGE_THRESHOLD } from "../constants/pagination";
 
 type PaginateControlProps = {
   pageTotal: number | undefined;
+  initPage: number;
 };
 
-export default function PaginateControl({ pageTotal }: PaginateControlProps) {
+export default function PaginateControl({
+  pageTotal,
+  initPage,
+}: PaginateControlProps) {
   const {
     currentPage,
     handlePrevPage,
@@ -31,8 +35,8 @@ export default function PaginateControl({ pageTotal }: PaginateControlProps) {
   const nextPageDisabled = currentPage === pageTotal;
 
   useEffect(() => {
-    handleSetPage(1);
-  }, []);
+    handleSetPage(initPage);
+  }, [initPage]);
 
   if (pageTotal) {
     return (
