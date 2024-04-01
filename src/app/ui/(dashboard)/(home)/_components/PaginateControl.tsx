@@ -1,7 +1,5 @@
 "use client";
 
-import { useCreatorPagination } from "@/app/store/use-pagination";
-
 import PrevPage from "./PrevPage";
 import MoveToFirstPage from "./MoveToFirstPage";
 import SetPage from "./SetPage";
@@ -10,33 +8,29 @@ import NextPage from "./NextPage";
 
 import styles from "./pagination.module.css";
 
-import { useEffect } from "react";
 import { PAGE_THRESHOLD } from "../constants/pagination";
 
 type PaginateControlProps = {
   pageTotal: number | undefined;
-  initPage: number;
+  currentPage: number;
+  handlePrevPage: () => void;
+  handleNextPage: (pageTotal: number) => void;
+  handleSetPage: (pageNum: number) => void;
+  handleMoveToFirstPage: () => void;
+  handleMoveToLastPage: (pageTotal: number) => void;
 };
 
 export default function PaginateControl({
   pageTotal,
-  initPage,
+  currentPage,
+  handleMoveToFirstPage,
+  handleMoveToLastPage,
+  handleNextPage,
+  handlePrevPage,
+  handleSetPage,
 }: PaginateControlProps) {
-  const {
-    currentPage,
-    handlePrevPage,
-    handleNextPage,
-    handleSetPage,
-    handleMoveToFirstPage,
-    handleMoveToLastPage,
-  } = useCreatorPagination();
-
   const prevPageDisabled = currentPage === 1;
   const nextPageDisabled = currentPage === pageTotal;
-
-  useEffect(() => {
-    handleSetPage(initPage);
-  }, [initPage]);
 
   if (pageTotal) {
     return (

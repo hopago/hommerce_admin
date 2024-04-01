@@ -2,7 +2,7 @@
 
 import styles from "./users-table.module.css";
 
-import { useCreatorPagination } from "@/app/store/use-pagination";
+import useCreatorPagination from "../../hooks/use-pagination";
 import { PaginatedUserResponse } from "../../types/user";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKeys } from "@/app/lib/getQueryClient";
@@ -16,7 +16,14 @@ import { DataTableSkeleton } from "../../books/_components/BooksSearchResults";
 import { NoContent } from "../management/[username]/_components/NoContentTable";
 
 export default function UsersTable() {
-  const { currentPage } = useCreatorPagination();
+  const {
+    currentPage,
+    handlePrevPage,
+    handleNextPage,
+    handleSetPage,
+    handleMoveToFirstPage,
+    handleMoveToLastPage,
+  } = useCreatorPagination();
 
   const {
     data,
@@ -73,7 +80,15 @@ export default function UsersTable() {
             ))}
           </tbody>
         </table>
-        <PaginateControl pageTotal={data.pagination.totalPages} />
+        <PaginateControl
+          pageTotal={data.pagination.totalPages}
+          currentPage={currentPage}
+          handlePrevPage={handlePrevPage}
+          handleNextPage={handleNextPage}
+          handleSetPage={handleSetPage}
+          handleMoveToFirstPage={handleMoveToFirstPage}
+          handleMoveToLastPage={handleMoveToLastPage}
+        />
       </>
     );
   }

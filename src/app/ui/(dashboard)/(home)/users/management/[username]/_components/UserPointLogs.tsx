@@ -1,36 +1,39 @@
+import styles from "./user-point-logs.module.css";
+
+import { creatorFilterPoints } from "@/app/store/use-filter";
+import { useScrollRef } from "../../../../hooks/use-scroll-ref";
+import useCreatorPagination from "../../../../hooks/use-pagination";
 import { useHandleError } from "../hooks/use-handle-error";
 
+import { useQuery } from "@tanstack/react-query";
+import { QueryKeys } from "@/app/lib/getQueryClient";
+import { daysToMs } from "../../../../utils/daysToMs";
+import { fetchUserPointLog } from "../services/fetchUserPointLog";
+
+import { DataTableSkeleton } from "../../../../books/_components/BooksSearchResults";
 import PaginateControl from "../../../../_components/PaginateControl";
 import FilterPointLogs from "./FilterPointLogs";
 import PointLogTable from "./PointLogTable";
 import UserPoint from "./UserPoint";
 import { NoContent } from "./NoContentTable";
 
-import styles from "./user-point-logs.module.css";
-
-import { creatorFilterPoints } from "@/app/store/use-filter";
-import { useCreatorPagination } from "@/app/store/use-pagination";
-
-import { useQuery } from "@tanstack/react-query";
-import { QueryKeys, getQueryClient } from "@/app/lib/getQueryClient";
-import { daysToMs } from "../../../../utils/daysToMs";
-import { fetchUserPointLog } from "../services/fetchUserPointLog";
-
-import { DataTableSkeleton } from "../../../../books/_components/BooksSearchResults";
-
-import { useEffect } from "react";
-import { useScrollRef } from "../../../../hooks/use-scroll-ref";
+import { useEffect, useState } from "react";
 
 type UserPointLogsProps = {
   userId: string;
 };
 
 export default function UserPointLogs({ userId }: UserPointLogsProps) {
-  const { sort, filter, searchTerm, enabled,  } =
+  const { sort, filter, searchTerm, enabled, setEnabled } =
     creatorFilterPoints();
-  const { currentPage } = useCreatorPagination();
-
-  const queryClient = getQueryClient();
+  const {
+    currentPage,
+    handlePrevPage,
+    handleNextPage,
+    handleSetPage,
+    handleMoveToFirstPage,
+    handleMoveToLastPage,
+  } = useCreatorPagination();
 
   const {
     data,
@@ -56,22 +59,31 @@ export default function UserPointLogs({ userId }: UserPointLogsProps) {
     enabled,
   });
 
+  useHandleError({ error, isError, fieldName: "포인트" });
+
+  useEffect(() => {
+    setEnabled(true);
+  }, [currentPage, sort]);
+
   useEffect(() => {
     if (enabled) {
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.USER_POINT_LOG, currentPage],
-      });
       refetch();
     }
-  }, [enabled, sort]);
+  }, [enabled]);
 
   useEffect(() => {
     if (isSuccess) {
-      (false);
+      setEnabled(false);
     }
   }, [isSuccess]);
 
-  useHandleError({ error, isError, fieldName: "포인트" });
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
 
   const { scrollRef } = useScrollRef({ currentPage });
 
@@ -103,7 +115,15 @@ export default function UserPointLogs({ userId }: UserPointLogsProps) {
           isLoading={isLoading}
           userId={userId}
         />
-        <PaginateControl pageTotal={data?.pagination.totalPages!} />
+        <PaginateControl
+          pageTotal={data?.pagination.totalPages}
+          currentPage={currentPage}
+          handlePrevPage={handlePrevPage}
+          handleNextPage={handleNextPage}
+          handleSetPage={handleSetPage}
+          handleMoveToFirstPage={handleMoveToFirstPage}
+          handleMoveToLastPage={handleMoveToLastPage}
+        />
       </div>
     );
   }

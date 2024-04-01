@@ -7,7 +7,7 @@ import FilterBooks, { FilterItemsSkeleton } from "./FilterBooks";
 import styles from "./book-search.module.css";
 
 import { creatorFilterBooks } from "@/app/store/use-filter";
-import { useCreatorPagination } from "@/app/store/use-pagination";
+import useCreatorPagination from "../../hooks/use-pagination";
 import { useScrollRef } from "../../hooks/use-scroll-ref";
 
 import { QueryKeys } from "@/app/lib/getQueryClient";
@@ -26,10 +26,14 @@ import { useEffect, useState } from "react";
 export default function BooksSearchResults() {
   const { sort, filter, searchTerm, enabled, setEnabled } =
     creatorFilterBooks();
-  const { currentPage } = useCreatorPagination();
-
-  console.log("업데이트", enabled);
-  console.log("페이지", currentPage);
+  const {
+    currentPage,
+    handlePrevPage,
+    handleNextPage,
+    handleSetPage,
+    handleMoveToFirstPage,
+    handleMoveToLastPage,
+  } = useCreatorPagination();
 
   const {
     data,
@@ -116,7 +120,12 @@ export default function BooksSearchResults() {
             />
             <PaginateControl
               pageTotal={data?.pagination.totalPages}
-              initPage={1}
+              currentPage={currentPage}
+              handlePrevPage={handlePrevPage}
+              handleNextPage={handleNextPage}
+              handleSetPage={handleSetPage}
+              handleMoveToFirstPage={handleMoveToFirstPage}
+              handleMoveToLastPage={handleMoveToLastPage}
             />
           </div>
         </div>
