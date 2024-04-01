@@ -1,9 +1,11 @@
 
-# Hommerce 아키텍처
+# Hommerce
 
+## 빌드 정보
+![App screenshot](https://i.imgur.com/WAmXnSl.png)
 
-
-
+## Google PageSpeed Insights
+![App screenshot](https://i.imgur.com/Ny9VcpY.png)
 ## 전체 흐름도
 
 ![App Screenshot](https://i.imgur.com/YRsqCdk.png)
@@ -80,25 +82,82 @@ NEXT_PUBLIC_UPLOADTHING_APP_ID=your_id
 ## useEffect
 ![App Screenshot](https://i.imgur.com/zrdaWVU.png)
 ## Features
+### /users
+    1. API 로컬 테스트 및 변형
+    2. 유저 debounced 검색
+    3. 커스텀 페이지네이션
+    4. 유저 다량 관리 시스템
 
-- Light/dark mode toggle
-- Live previews
-- Fullscreen mode
-- Cross platform
+## Usage
+# API 로컬 테스트 및 변형
+## 기본 사용법
 
+![App screenshot](https://i.imgur.com/v6XKjHJ.png)
 
-## Usage/Examples
+![App screenshot](https://i.imgur.com/7E8NVch.png)
 
-```javascript
-import Component from 'my-project'
+## 데이터 타입 검증
 
-function App() {
-  return <Component />
-}
+![App screenshot](https://i.imgur.com/g9HIeyJ.png)
+
+### 검증 로직
+
+``` javascript
+// BodyInput.tsx
+  const { inputValue, handleInputChange, error } = useBodyInput({
+    onError: (errMsg: string) => {
+      toast.error(errMsg);
+    },
+  });
+
+// use-body-input.ts
+import { create } from "zustand";
+
+type CreatorUseBodyInput = {
+  inputValue: string;
+  parsedValue: unknown;
+  error: boolean;
+  errMsg: string | null;
+  setInputValue: (value: string) => void;
+  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  resetErrorState: () => void;
+};
+
+export const useBodyInput = create<CreatorUseBodyInput>((set) => ({
+  ...
+  handleInputChange: (e) => {
+    const value = e.target.value;
+    set((state) => {
+      state.error = false;
+      state.errMsg = null;
+      state.setInputValue(value);
+      return state;
+    });
+  },
+  setInputValue: (value) =>
+    set((state) => {
+      state.inputValue = value;
+      try {
+        const parsedValue = JSON.parse(value);
+        return { ...state, parsedValue, error: false, errMsg: null };
+      } catch (error) {
+        if (state.inputValue.trim() === "")
+          return {
+            ...state,
+            error: false,
+            errMsg: null,
+          };
+
+        return {
+          ...state,
+          error: true,
+          errMsg: "적합하지 않은 JSON 형식입니다.",
+        };
+      }
+    }),
+}));
+
 ```
 
-
-## Lessons Learned
-
-What did you learn while building this project? What challenges did you face and how did you overcome them?
-
+# 유저 debounced 검색
+## 기본 사용법
