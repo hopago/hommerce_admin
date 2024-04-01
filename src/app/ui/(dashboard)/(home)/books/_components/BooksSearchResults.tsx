@@ -29,10 +29,9 @@ export default function BooksSearchResults() {
     creatorFilterBooks();
   const { currentPage } = useCreatorPagination();
 
-  const queryClient = getQueryClient();
+  console.log("업데이트", enabled);
 
-  console.log(currentPage);
-  console.log(enabled);
+  const queryClient = getQueryClient();
 
   const {
     data,

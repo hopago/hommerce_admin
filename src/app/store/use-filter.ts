@@ -38,6 +38,7 @@ export const creatorFilter = <T>(initialFilter: T) =>
         searchTerm,
       }),
     setEnabled: (enabled: boolean) => {
+      console.log("상태 업데이트", enabled);
       set({
         enabled,
       });

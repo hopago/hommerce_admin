@@ -21,6 +21,7 @@ export default function NextPage({
   const { setEnabled } = creatorFilterBooks();
   const onClick = () => {
     onNextPage(pageTotal);
+    console.log("IT WORKS?");
     setEnabled(true);
   };
 

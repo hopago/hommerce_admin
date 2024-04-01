@@ -24,7 +24,6 @@ export const useCreatorPagination = create<CreatorPagination>((set) => ({
           : state.currentPage,
     })),
   handleSetPage: (pageNum: number) => {
-    console.log(pageNum);
     set({
       currentPage: pageNum,
     });

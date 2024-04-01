@@ -26,7 +26,7 @@ type UserPointLogsProps = {
 };
 
 export default function UserPointLogs({ userId }: UserPointLogsProps) {
-  const { sort, filter, searchTerm, enabled, setEnabled } =
+  const { sort, filter, searchTerm, enabled,  } =
     creatorFilterPoints();
   const { currentPage } = useCreatorPagination();
 
@@ -67,7 +67,7 @@ export default function UserPointLogs({ userId }: UserPointLogsProps) {
 
   useEffect(() => {
     if (isSuccess) {
-      setEnabled(false);
+      (false);
     }
   }, [isSuccess]);
 
