@@ -5,7 +5,6 @@ import { cn } from "@/app/ui/lib/utils";
 import { MdArrowRight } from "react-icons/md";
 
 import styles from "./pagination.module.css";
-import { creatorFilterBooks } from "@/app/store/use-filter";
 
 type NextPageProps = {
   onNextPage: (pageTotal: number) => void;
@@ -18,7 +17,6 @@ export default function NextPage({
   disabled,
   pageTotal,
 }: NextPageProps) {
-  const { setEnabled } = creatorFilterBooks();
   const onClick = () => {
     onNextPage(pageTotal);
   };

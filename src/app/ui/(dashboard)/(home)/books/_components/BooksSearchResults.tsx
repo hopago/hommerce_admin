@@ -58,7 +58,7 @@ export default function BooksSearchResults() {
 
   useEffect(() => {
     setEnabled(true);
-  }, [currentPage]);
+  }, [currentPage, sort]);
 
   useEffect(() => {
     console.log("useEffect 업데이트", enabled);
@@ -70,7 +70,7 @@ export default function BooksSearchResults() {
         });
       };
 
-      refetchQueries().catch(console.error);
+      refetchQueries();
     }
   }, [enabled, sort, filter, searchTerm]);
 

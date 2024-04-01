@@ -1,6 +1,5 @@
 "use client";
 
-import { creatorFilterBooks } from "@/app/store/use-filter";
 import styles from "./pagination.module.css";
 
 type MoveToLastPageProps = {
@@ -12,8 +11,6 @@ export default function MoveToLastPage({
   handleMoveToLastPage,
   pageTotal,
 }: MoveToLastPageProps) {
-  const { setEnabled } = creatorFilterBooks();
-
   const onClick = () => {
     handleMoveToLastPage(pageTotal);
   };
