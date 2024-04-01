@@ -21,7 +21,6 @@ export default function SetPage({ onSetPage, total, currPage }: SetPageProps) {
 
   const onClick = (page: number) => {
     onSetPage(page);
-    setEnabled(true);
   };
 
   return (

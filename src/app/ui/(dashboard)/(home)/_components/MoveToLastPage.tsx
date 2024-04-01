@@ -16,7 +16,6 @@ export default function MoveToLastPage({
 
   const onClick = () => {
     handleMoveToLastPage(pageTotal);
-    setEnabled(true);
   };
 
   return (
