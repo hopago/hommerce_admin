@@ -23,13 +23,13 @@ import { cn } from "@/app/ui/lib/utils";
 
 import { useEffect, useState } from "react";
 
-// setEnabled 추적
 export default function BooksSearchResults() {
   const { sort, filter, searchTerm, enabled, setEnabled } =
     creatorFilterBooks();
   const { currentPage } = useCreatorPagination();
 
   console.log("업데이트", enabled);
+  console.log("페이지", currentPage);
 
   const queryClient = getQueryClient();
 
@@ -57,12 +57,14 @@ export default function BooksSearchResults() {
   });
 
   useEffect(() => {
+    console.log("useEffect 업데이트", enabled);
+    console.log("useEffect 페이지", currentPage);
     if (enabled) {
       queryClient.refetchQueries({
         queryKey: [QueryKeys.BOOK, currentPage],
       });
     }
-  }, [enabled, currentPage, sort, filter, searchTerm]);
+  }, [sort, filter, searchTerm]);
 
   useEffect(() => {
     if (isSuccess) {
