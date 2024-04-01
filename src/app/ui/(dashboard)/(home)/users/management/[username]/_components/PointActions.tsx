@@ -28,6 +28,7 @@ type PointActionsProps = {
   desc: string;
   amount: number;
   userId: string;
+  currentPage: number;
 };
 
 type UpdateModalProps = {
@@ -45,6 +46,7 @@ export default function PointActions({
   amount,
   desc,
   userId,
+  currentPage,
 }: PointActionsProps) {
   const containerRef = useRef<HTMLTableDataCellElement>(null);
   const modalRef = useRef<HTMLFormElement>(null);
@@ -59,7 +61,7 @@ export default function PointActions({
     setDesc,
     localAmount,
     localDesc,
-  } = useMutatePointLogModal(modalRef, pointId, userId, amount, desc);
+  } = useMutatePointLogModal(modalRef, pointId, userId, amount, desc, currentPage);
 
   useEffect(() => {
     if (modalShow) {

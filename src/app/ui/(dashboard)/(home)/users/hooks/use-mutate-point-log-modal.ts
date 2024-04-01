@@ -11,11 +11,14 @@ export const useMutatePointLogModal = <T extends HTMLElement>(
   pointId: string,
   userId: string,
   amount: number,
-  desc: string
+  desc: string,
+  currentPage: number
 ) => {
   const { show, setShow } = useToggle(ref);
 
-  const { mutate, isPending, isSuccess } = useUserPointLogMutation();
+  const { mutate, isPending, isSuccess } = useUserPointLogMutation({
+    currentPage,
+  });
 
   const [localAmount, setLocalAmount] = useState(amount);
   const [localDesc, setLocalDesc] = useState(desc);
@@ -41,7 +44,12 @@ export const useMutatePointLogModal = <T extends HTMLElement>(
       return;
     }
 
-    const payload: { pointId: string; amount?: number; desc?: string; userId: string; } = {
+    const payload: {
+      pointId: string;
+      amount?: number;
+      desc?: string;
+      userId: string;
+    } = {
       pointId,
       userId,
       amount: localAmount,

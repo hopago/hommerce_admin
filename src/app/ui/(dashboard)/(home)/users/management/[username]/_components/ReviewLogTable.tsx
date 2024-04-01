@@ -6,13 +6,14 @@ import ReviewSelectAllCheckBox from "./ReviewSelectAllCheckBox";
 
 import styles from "./review-log-list.module.css";
 
-import { TableRowSkeleton } from "./TableRowSkeleton";
+import { TableSkeleton } from "../../../../books/_components/BookTable";
 
 type ReviewLogTableProps = {
   reviews: ReviewLogs | undefined;
   dataLength: number;
   isLoading: boolean;
   userId: string;
+  currentPage: number;
 };
 
 export default function ReviewLogTable({
@@ -20,6 +21,7 @@ export default function ReviewLogTable({
   dataLength,
   isLoading,
   userId,
+  currentPage,
 }: ReviewLogTableProps) {
   const ids = reviews?.map((review) => review._id);
 
@@ -38,11 +40,12 @@ export default function ReviewLogTable({
           </thead>
           <tbody>
             {reviews?.map((review) => (
-              <Suspense key={review._id} fallback={<TableRowSkeleton />}>
+              <Suspense key={review._id} fallback={<TableSkeleton />}>
                 <ReviewRowAsync
                   review={review}
                   isLoading={isLoading}
                   userId={userId}
+                  currentPage={currentPage}
                 />
               </Suspense>
             ))}

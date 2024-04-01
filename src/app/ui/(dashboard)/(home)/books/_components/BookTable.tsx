@@ -50,11 +50,8 @@ export default function BookTable({
             </tr>
           </thead>
           <tbody>
-            {books?.map((book, i) => (
-              <Suspense
-                key={`${book._id}-${i}`}
-                fallback={<TableRowSkeleton />}
-              >
+            {books?.map((book) => (
+              <Suspense key={book._id} fallback={<TableSkeleton />}>
                 <BookRowAsync book={book} isLoading={isLoading} />
               </Suspense>
             ))}
@@ -86,18 +83,15 @@ export const TableSkeleton = () => (
             </td>
           </tr>
         </thead>
-        <tr>
+        <tr style={{ marginBottom: "48px" }}>
           <TableRowSkeleton />
         </tr>
-        <div style={{ marginBottom: "48px" }} />
-        <tr>
+        <tr style={{ marginBottom: "48px" }}>
           <TableRowSkeleton />
         </tr>
-        <div style={{ marginBottom: "48px" }} />
-        <tr>
+        <tr style={{ marginBottom: "48px" }}>
           <TableRowSkeleton />
         </tr>
-        <div style={{ marginBottom: "48px" }} />
         <tr>
           <TableRowSkeleton />
         </tr>

@@ -3,10 +3,7 @@ import { reactQueryFetcher } from "@/app/fetcher/fetcher";
 import { QueryKeys, getQueryClient } from "@/app/lib/getQueryClient";
 import { useMutation } from "@tanstack/react-query";
 
-import { creatorFilterReviews } from "@/app/store/use-filter";
-
 import { toast } from "sonner";
-import { useCreatorPagination } from "@/app/store/use-pagination";
 
 const deleteReview = async (id: string) => {
   return reactQueryFetcher<string>({
@@ -15,11 +12,14 @@ const deleteReview = async (id: string) => {
   });
 };
 
-export const useUserReviewMutation = ({ userId }: { userId: string }) => {
+export const useUserReviewMutation = ({
+  userId,
+  currentPage,
+}: {
+  userId: string;
+  currentPage: number;
+}) => {
   const queryClient = getQueryClient();
-
-  const { filter, searchTerm, sort } = creatorFilterReviews();
-  const { currentPage } = useCreatorPagination();
 
   const { mutate, isPending } = useMutation<
     string[],

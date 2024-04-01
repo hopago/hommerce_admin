@@ -6,8 +6,6 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { createQueryString } from "../../../../utils/createQueryString";
-import { creatorFilterPoints } from "@/app/store/use-filter";
-import { useCreatorPagination } from "@/app/store/use-pagination";
 
 const updatePointLog = async ({
   userId,
@@ -32,11 +30,12 @@ const updatePointLog = async ({
   });
 };
 
-export const useUserPointLogMutation = () => {
+export const useUserPointLogMutation = ({
+  currentPage,
+}: {
+  currentPage: number;
+}) => {
   const queryClient = getQueryClient();
-
-  const { sort, filter, searchTerm } = creatorFilterPoints();
-  const { currentPage } = useCreatorPagination();
 
   const { mutate, isPending, isSuccess } = useMutation<
     PointLog,

@@ -20,9 +20,14 @@ import { Navigate } from "./NavigateButton";
 type ReviewActionsProps = {
   id: string;
   userId: string;
+  currentPage: number;
 };
 
-export default function ReviewActions({ id, userId }: ReviewActionsProps) {
+export default function ReviewActions({
+  id,
+  userId,
+  currentPage,
+}: ReviewActionsProps) {
   const containerRef = useRef<HTMLTableDataCellElement>(null);
 
   const { show, toggleClick } = useToggle(containerRef);
@@ -41,15 +46,23 @@ export default function ReviewActions({ id, userId }: ReviewActionsProps) {
       {show && (
         <div className={styles.reviewActionsButtons}>
           <Navigate path={`/reviews/${id}`} text="상세보기" />
-          <Delete userId={userId} id={id} />
+          <Delete userId={userId} id={id} currentPage={currentPage} />
         </div>
       )}
     </td>
   );
 }
 
-function Delete({ id, userId }: { id: string; userId: string; }) {
-  const { mutate, isPending } = useUserReviewMutation({ userId });
+function Delete({
+  id,
+  userId,
+  currentPage,
+}: {
+  id: string;
+  userId: string;
+  currentPage: number;
+}) {
+  const { mutate, isPending } = useUserReviewMutation({ userId, currentPage });
 
   const onClick = () => {
     mutate(id);

@@ -114,6 +114,7 @@ export default function UserPointLogs({ userId }: UserPointLogsProps) {
           pointLogs={data.pointsLogs as PointLogs}
           isLoading={isLoading}
           userId={userId}
+          currentPage={currentPage}
         />
         <PaginateControl
           pageTotal={data?.pagination.totalPages}

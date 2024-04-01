@@ -103,6 +103,7 @@ export default function ReviewLogs({ userId }: { userId: string }) {
           isLoading={isLoading}
           reviews={data.reviews as ReviewLogs}
           dataLength={data?.pagination.totalReviews}
+          currentPage={currentPage}
         />
         <PaginateControl
           pageTotal={data?.pagination?.totalPages}

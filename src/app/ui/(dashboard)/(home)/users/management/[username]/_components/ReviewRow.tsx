@@ -9,6 +9,7 @@ type ReviewRowProps = {
   review: ReviewLog;
   isLoading: boolean;
   userId: string;
+  currentPage: number;
 };
 
 export const ReviewRowAsync = React.lazy(() => import("./ReviewRow"));
@@ -17,6 +18,7 @@ export default function ReviewRow({
   review,
   isLoading,
   userId,
+  currentPage,
 }: ReviewRowProps) {
   if (isLoading) return <TableRowSkeleton />;
 
@@ -26,7 +28,11 @@ export default function ReviewRow({
       <td>{review._id}</td>
       <td>{review.bookTitle}</td>
       <td>{review.desc}</td>
-      <ReviewActions id={review._id} userId={userId} />
+      <ReviewActions
+        id={review._id}
+        userId={userId}
+        currentPage={currentPage}
+      />
     </tr>
   );
 }

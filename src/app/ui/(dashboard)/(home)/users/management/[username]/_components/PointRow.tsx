@@ -13,11 +13,17 @@ type PointRowProps = {
   point: PointLog;
   isLoading: boolean;
   userId: string;
+  currentPage: number;
 };
 
 export const PointRowAsync = React.lazy(() => import("./PointRow"));
 
-export default function PointRow({ point, isLoading, userId }: PointRowProps) {
+export default function PointRow({
+  point,
+  isLoading,
+  userId,
+  currentPage,
+}: PointRowProps) {
   if (isLoading) return <TableRowSkeleton />;
 
   return (
@@ -33,6 +39,7 @@ export default function PointRow({ point, isLoading, userId }: PointRowProps) {
         {point.amount}
       </td>
       <PointActions
+        currentPage={currentPage}
         pointId={point._id}
         desc={point.desc}
         amount={point.amount}
