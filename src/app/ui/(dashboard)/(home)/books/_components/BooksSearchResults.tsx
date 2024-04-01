@@ -61,9 +61,9 @@ export default function BooksSearchResults() {
     if (enabled) {
       queryClient.refetchQueries({
         queryKey: [QueryKeys.BOOK, currentPage],
-      })
+      });
     }
-  }, [enabled, sort, filter, searchTerm]);
+  }, [enabled, currentPage, sort, filter, searchTerm]);
 
   useEffect(() => {
     if (isSuccess) {

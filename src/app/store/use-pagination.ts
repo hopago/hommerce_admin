@@ -23,10 +23,12 @@ export const useCreatorPagination = create<CreatorPagination>((set) => ({
           ? state.currentPage + 1
           : state.currentPage,
     })),
-  handleSetPage: (pageNum: number) =>
+  handleSetPage: (pageNum: number) => {
+    console.log(pageNum);
     set({
       currentPage: pageNum,
-    }),
+    });
+  },
   handleMoveToFirstPage: () =>
     set({
       currentPage: 1,
