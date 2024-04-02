@@ -1068,7 +1068,9 @@ export function useFilter<T>(props: UseFilterProps<T>) {
 ## Features
 ### /books/[bookId]
     1. ISR  
-    2. 웹 훅 연동 이미지 업로드 및 삭제
+    2. 웹 훅 연동 이미지 업로드 및 삭제  
+
+# ISR
 ### page.tsx  
 ``` javascript
 export const preload = (bookId: string) => {
@@ -1111,8 +1113,8 @@ export const getBook = async (bookId: string) => {
 
 ![App screenshot](https://i.imgur.com/T0fUTDw.png)  
 
-### Mutate Image  
-###### 설계  
+# Mutate Image  
+### 설계  
 ![App screenshot](https://i.imgur.com/LG6cehY.png)  
 ###### **업로드 로직**
 
@@ -1227,3 +1229,154 @@ export const usePostImage = ({
 };
 
 ```  
+### /books/edit/[bookId]  
+# 기본 사용법  
+
+![App screenshot](https://i.imgur.com/ns7KO2R.png)  
+![App screenshot](https://i.imgur.com/2GZJ6rH.png)  
+
+##### FormData 검증  
+
+``` javasscript
+// use-form-input.ts
+
+export const useFormInputs = ({ initialBook }: UseFormInputsParams) => {
+  const [initState, setInitState] = useState<IBook | null>(null);
+  // 입력 필드 객체 형태로 관리
+  const [book, setBook] = useState<Partial<IBook>>({
+    title: initialBook?.title,
+    author: initialBook?.author,
+    publisher: initialBook?.publisher,
+    desc: initialBook?.desc,
+    comment: initialBook?.comment ?? "",
+    price: initialBook?.price,
+    unit: initialBook?.unit,
+    discount: initialBook?.discount,
+    eBookPrice: initialBook?.eBookPrice,
+  });
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+
+      setBook({
+        ...book,
+        [name]: value,
+      });
+    },
+    [book]
+  );
+
+  // 책 초기 데이터 세팅
+  useEffect(() => {
+    if (initialBook) {
+      setBook(initialBook);
+      setInitState(initialBook);
+    }
+  }, [initialBook]);
+
+  return {
+    book,
+    handleChange,
+    initState,
+  };
+};
+
+```  
+``` javascript
+// use-book-form.ts
+
+type UseBookFormProps = {
+  initialBook: IBook | undefined;
+  bookId: string;
+};
+
+// 유효 필드 keys
+const validFields = [
+  "title",
+  "desc",
+  "representImg",
+  "parentCategory",
+  "category",
+  "author",
+  "price",
+  "unit",
+  "publisher",
+  "comment",
+  "ebookPrice",
+  "discount",
+  "images",
+  "sellWay",
+];
+
+export const useBookForm = ({ initialBook, bookId }: UseBookFormProps) => {
+  // input 관련 로직들 import
+  const { book, handleChange, initState } = useFormInputs({ initialBook });
+
+  // useMutation - mutateFn
+  const { mutateBook, isPending } = useUpdateBook({ bookId });
+
+  // 객체의 키에 따른 value들을 initialBook과 비교하여 mutateFn의 props로 제출
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (initState) {
+      const mutatedPart = getDifferences(initState, book);
+
+      const props = Object.keys(mutatedPart).reduce(
+        (acc: Partial<IBook>, key) => {
+          if (validFields.includes(key)) {
+            acc[key] = mutatedPart[key];
+          }
+          return acc;
+        },
+        {}
+      );
+
+      mutateBook(props);
+    } else {
+      toast.message("초기값 설정에 실패했습니다.");
+    }
+  };
+
+  return {
+    book,
+    handleChange,
+    handleSubmit,
+    isPending,
+  };
+};
+
+```  
+``` javascript
+// ./[bookId]/utils/getDifferences.ts
+type BookKeys = keyof IBook;
+
+export function getDifferences(
+  initialBook: IBook,
+  book: Partial<IBook>
+): Partial<IBook> {
+  const differences: Partial<IBook> = {};
+
+  // IBook의 key값을 array 형태로 변환
+  const allKeys = Array.from(
+    new Set([...Object.keys(initialBook), ...Object.keys(book)])
+  ) as BookKeys[];
+
+  // 모든 키 값을 JSON.stringify() 활용하여 비교 후 differcens object에 할당하여 리턴
+  allKeys.forEach((key) => {
+    if (JSON.stringify(initialBook[key]) !== JSON.stringify(book[key])) {
+      differences[key] = book[key];
+    }
+  });
+
+  return differences;
+}
+
+```  
+### 404.tsx  
+![App screenshot](https://i.imgur.com/pspxr1c.png)  
+
+## 
+
+
