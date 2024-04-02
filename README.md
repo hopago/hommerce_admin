@@ -88,7 +88,6 @@ NEXT_PUBLIC_UPLOADTHING_APP_ID=your_id
     1. API 로컬 테스트 및 변형
     2. 유저 debounced 검색
     3. 커스텀 페이지네이션
-    4. 유저 다량 관리 시스템
 
 ## Usage
 # API 로컬 테스트 및 변형
@@ -573,3 +572,487 @@ export const useSearchUserForm = () => {
     }
   }, [manageError, errMsg]);
 ```
+## /users/management
+### page.tsx
+``` javasciprt
+"use client";
+
+export default function UserManagement() {
+  // client 사이드에서 처리
+  if (typeof window !== "undefined") {
+    // 검색폼에서 선택된 유저들
+    const { usernames } = useManageUsers();
+
+    const router = useRouter();
+
+    // 선택된 유저가 없을 시 이전 페이지, 있을시 배열 중 첫번째 유저 선택 후 라우팅 처리
+    if (!usernames || !usernames.length) {
+      toast.message("선택된 유저가 없습니다.");
+      router.back();
+    } else {
+      router.push(`/users/management/${usernames![0]}`); 
+    }
+  }
+
+  return null;
+}
+
+```  
+## /users/management/[username]  
+### page.tsx
+SSR + FCP 개선을 위해 공식문서( https://tanstack.com/query/v4/docs/framework/react/guides/ssr )에 따라 prefetching 진행  
+
+``` javascript
+"use client"
+
+type UserProps = {
+  params: {
+    username: string;
+  };
+};
+
+export default async function User({ params }: UserProps) {
+  const { username } = params;
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: [QueryKeys.USER, username],
+    queryFn: () => fetchUserBySearchTerm({ searchTerm: username }),
+    staleTime: daysToMs(1),
+    gcTime: daysToMs(3),
+  });
+
+  const dehydratedState = dehydrate(queryClient);
+
+  return (
+    <div className={styles.container}>
+      <HydrationBoundary state={dehydratedState}>
+        <section className={styles.contents}>
+          <TabList />
+          <Suspense fallback={<UserDetailsSkeleton />}>
+            <UserDetails />
+          </Suspense>
+        </section>
+      </HydrationBoundary>
+    </div>
+  );
+}
+
+```  
+## UserDetails ( 페이지네이션, 연관 데이터 테이블 )  
+### UserDetails.tsx  
+``` javascript
+
+export default function UserDetails() {
+  // 현재 선택된 유저, 초기값 usernames[0]이나 TabList에서 조정 가능
+  const username = getUsernameByPath();
+
+  // SSR UI 트리, CLIENT UI 트리가 조건문으로 인하여 달라짐, CSR 설정
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // username에 따라 새로운 데이터를 불러옴
+  const {
+    data,
+    error,
+    refetch,
+    isLoading,
+    isError,
+    isRefetching,
+    isRefetchError,
+  } = useQuery({
+    queryKey: [QueryKeys.USER, username],
+    queryFn: () => fetchUserBySearchTerm({ searchTerm: username }),
+    staleTime: daysToMs(1),
+    gcTime: daysToMs(3),
+  });
+
+  useHandleError({ error, isError, isRefetchError, fieldName: "유저" });
+
+  // API에서 mongoose의 find 메소드를 사용 중 이므로 [user] || [], 알맞게 처리
+  const user = data ? data[0] : null;
+  const memoUser = useMemo(() => user, [user]);
+
+  if (!isClient) return null;
+
+  if (isLoading) return <UserDetailsSkeleton />;
+
+  if (!data) return null;
+
+  return (
+    <main className={styles.container}>
+      <UserDetailsHeader />
+      <div className={styles.contents}>
+        {memoUser && (
+          <div className={styles.contentsWrap}>
+            <UserProfile
+              imageUrl={memoUser.imageUrl}
+              username={memoUser.username}
+            />
+            <UserDetailsInfo
+              grade={memoUser.grade}
+              username={memoUser.username}
+              email={memoUser.email}
+              status={memoUser.status}
+              createdAt={memoUser.createdAt}
+            />
+            <UserLogs
+              userId={memoUser.id}
+              createdAt={memoUser.createdAt}
+              updatedAt={memoUser.updatedAt}
+            />
+          </div>
+        )}
+      </div>
+      {isError && (
+        <ApiRefetch
+          isError={isError}
+          refetch={refetch}
+          isRefetching={isRefetching}
+          isRefetchError={isRefetchError}
+        />
+      )}
+    </main>
+  );
+}
+
+export const UserDetailsSkeleton = () => (
+  <div className={styles.container}>
+    <UserDetailsHeaderSkeleton />
+    <div className={styles.contents}>
+      <div className={styles.contentsWrap}>
+        <UserProfileSkeleton />
+        <UserDetailsInfoSkeleton />
+        <UserLogsSkeleton />
+      </div>
+    </div>
+  </div>
+```  
+### 커스텀 페이지네이션  
+Pagination과 Filter & SearchTerm & Sort에 공통적으로 사용되는 로직과 컴포넌트들은 확장 가능성을 고려하여 공용 컴포넌트와 훅들로 분리하여 모든 Paginated Data Table에 성공적으로 적용하였습니다.  
+``` javascript
+// UserPostLogs.tsx
+
+// FAQ(미구현)
+export default function UserPostLogs({ userId }: { userId: string }) {
+  const { currTab, setCurrTab } = useTabList();
+
+  const renderContents = currTab === "리뷰" ? <ReviewLogs userId={userId} /> : <FAQLogs />;
+
+  return (
+    <div className={styles.postLogs}>
+      <div className={styles.postLogsWrap}>
+        <h1>고객 참여 활동</h1>
+        <div className={styles.setTab}>
+          <h1 className={styles.currTab}>{currTab}</h1>
+          <PostLogsTabList currTab={currTab} setCurrTab={setCurrTab} />
+        </div>
+        {renderContents}
+      </div>
+    </div>
+  );
+}
+```  
+
+``` javascript
+// ReviewLogs.tsx
+
+export default function ReviewLogs({ userId }: { userId: string }) {
+  // 검색 조건들과 refetch를 force시키는 enabled state
+  const { filter, searchTerm, sort, enabled, setEnabled } =
+    creatorFilterReviews();
+  // 재사용 가능한 페이지네이션 커스텀 훅
+  const {
+    currentPage,
+    handlePrevPage,
+    handleNextPage,
+    handleSetPage,
+    handleMoveToFirstPage,
+    handleMoveToLastPage,
+  } = useCreatorPagination();
+  // 페이지 이동시 컨테이너로 스크롤 이동
+  const { scrollRef } = useScrollRef({ currentPage });
+
+  // 검색 조건과 페이지에 따라 데이터 fetching
+  const {
+    data,
+    error,
+    isError,
+    isLoading,
+    isSuccess,
+    refetch,
+    isRefetching,
+    isRefetchError,
+  } = useQuery<ReviewData>({
+    queryKey: [QueryKeys.USER_REVIEW, currentPage],
+    queryFn: () =>
+      fetchUserReviews({
+        pageNum: currentPage,
+        filter,
+        searchTerm,
+        userId,
+        sort,
+      }),
+    staleTime: daysToMs(1),
+    gcTime: daysToMs(3),
+    enabled,
+  });
+
+  useHandleError({ error, isError, fieldName: "리뷰" });
+
+  // 현재 페이지, sort 옵션 변경시 force refetch
+  useEffect(() => {
+    setEnabled(true);
+  }, [currentPage, sort]);
+
+  // enabled 감지 후 refetch()
+  useEffect(() => {
+    if (enabled) {
+      refetch();
+    }
+  }, [enabled]);
+
+  // 데이터 fetching 성공 시 setEnabled(false)
+  useEffect(() => {
+    if (isSuccess) {
+      setEnabled(false);
+    }
+  }, [isSuccess]);
+
+  // Hydration 에러 방지
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
+
+  if (isLoading) return <DataTableSkeleton />;
+
+  if (isSuccess && !data?.reviews?.length)
+    return (
+      <NoContent
+        queryKey={[QueryKeys.USER_REVIEW, userId]}
+        refetch={refetch}
+        error={error}
+        isRefetching={isRefetching}
+        isRefetchError={isRefetchError}
+        fieldName="리뷰"
+      />
+    );
+
+  if (isSuccess && data?.reviews?.length) {
+    return (
+      <div ref={scrollRef}>
+        <FilterReviewLogs />
+        <ReviewLogTable
+          userId={userId}
+          isLoading={isLoading}
+          reviews={data.reviews as ReviewLogs}
+          dataLength={data?.pagination.totalReviews}
+          currentPage={currentPage}
+        />
+        <PaginateControl
+          pageTotal={data?.pagination?.totalPages}
+          currentPage={currentPage}
+          handlePrevPage={handlePrevPage}
+          handleNextPage={handleNextPage}
+          handleSetPage={handleSetPage}
+          handleMoveToFirstPage={handleMoveToFirstPage}
+          handleMoveToLastPage={handleMoveToLastPage}
+        />
+      </div>
+    );
+  }
+}
+
+```  
+  Enabled로 force-refetch
+
+  Enabled로 Handling 하는 이유,
+  Filter를 선택 후 검색해야함 
+  ( 예: 리뷰 내용 필터 선택 후 리뷰 내용 입력, 책 제목 선택 후 책 제목 입력 )
+
+  즉 Filter & SearchTerm 둘 다 의미있는 값이 존재해야하나 이를 상태로 정의하려면 명확하지 않다
+  유저의 Submit Event를 받는 시점에 enabled을 true로 설정하여 리패칭 유도  
+  
+```javascript
+// use-filter.ts ( zustand )
+// SORT -> <T, S> 등으로 확장 가능
+// FILTER -> T 제네릭을 받아 타입 확장
+
+interface CreatorUseFilterReviews<T> {
+  sort: "최신순" | "오래된순";
+  filter: T;
+  searchTerm: string;
+  enabled: boolean;
+  setSort: (sort: "최신순" | "오래된순") => void;
+  setFilter: (filter: T) => void;
+  setSearchTerm: (searchTerm: string) => void;
+  setEnabled: (param: boolean) => void;
+  resetSearchState: () => void;
+}
+
+export const creatorFilter = <T>(initialFilter: T) =>
+  create<CreatorUseFilterReviews<T>>((set) => ({
+    sort: "최신순",
+    filter: initialFilter,
+    searchTerm: "",
+    enabled: true,
+    setSort: (sort: "최신순" | "오래된순") =>
+      set({
+        enabled: false,
+        sort,
+      }),
+    setFilter: (filter: T) =>
+      set({
+        enabled: false,
+        filter,
+      }),
+    setSearchTerm: (searchTerm: string) =>
+      set({
+        enabled: false,
+        searchTerm,
+      }),
+    setEnabled: (enabled: boolean) => {
+      set({
+        enabled,
+      });
+    },
+    resetSearchState: () =>
+      set({
+        enabled: true,
+        sort: "최신순",
+        filter: initialFilter,
+        searchTerm: "",
+      }),
+  }));
+
+// T 제네릭 활용하여 유저 포인트, 도서, 유저 리뷰 컴포넌트에 활용
+export const creatorFilterPoints =
+  creatorFilter<PointFilterOption>("검색 옵션");
+
+export const creatorFilterReviews = creatorFilter<FilterOption>("검색 옵션");
+
+export const creatorFilterBooks = creatorFilter<BookFilterOption>("통합검색");
+
+```  
+Filter & SearchTerm 처리 방식  
+``` javascript
+  // 컴포넌트 활용법
+
+  // Store에서 정의한 타입과 동일한 값들을 Item으로 가진 배열 생성
+  // 예: creatorFilterReviews 사용시 FilterOption[]
+  const filterOptions: FilterOption[] = [
+    "검색 옵션",
+    "리뷰 ID",
+    "리뷰 내용",
+    "책 제목",
+  ];
+
+  // 사용할 Filter & SearchTerm Store State
+  const props = creatorFilterReviews();
+
+  // 커스텀 훅에 props로 전달
+  // 해당 상태를 기반으로 search-form에 필요한 값, 함수들을 받는다
+  const {
+    show,
+    toggleShow,
+    handleSearch,
+    handleReset,
+    filter,
+    setFilter,
+    setShow,
+    searchTerm,
+    handleSubmit,
+  } = useFilter<FilterOption>(props);
+```  
+``` javascript
+// use-filter.ts ( custom-hook )
+
+// zustand interface와 동일하다
+interface UseFilterProps<T> {
+  sort: "최신순" | "오래된순";
+  filter: T;
+  searchTerm: string;
+  enabled: boolean;
+  setSort: (sort: "최신순" | "오래된순") => void;
+  setFilter: (filter: T) => void;
+  setSearchTerm: (searchTerm: string) => void;
+  setEnabled: (param: boolean) => void;
+  resetSearchState: () => void;
+}
+
+export function useFilter<T>(props: UseFilterProps<T>) {
+  const {
+    filter,
+    setFilter,
+    sort,
+    setSort,
+    searchTerm,
+    setSearchTerm,
+    resetSearchState,
+    setEnabled,
+  } = props;
+
+  // sort와 filter는 select ui로 구성, 아이템 선택시 열림, 닫힘의 상태가 필요하다
+  const [show, setShow] = useState(false);
+
+  const toggleShow = useCallback(() => setShow((prev) => !prev), []);
+
+  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  // sort 변경 시 상위 컴포넌트의 useEffect에서 enabled -> true
+  const handleSort = useCallback((sort: "최신순" | "오래된순") => {
+    setSort(sort);
+    setShow(false);
+  }, []);
+
+  const handleReset = useCallback(() => {
+    resetSearchState();
+    setShow(false);
+  }, []);
+
+  // 클라이언트가 필터와 검색어를 입력한 뒤 Submit Event 처리
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (filter && searchTerm.trim() === "") {
+      toast.message("검색어를 입력해주세요.");
+    }
+
+    // 해당 filter와 searchTerm은 전역 상태로써 상위 컴포넌트에 전달 가능하다
+    setEnabled(true);
+  };
+
+  useEffect(() => {
+    setShow(false);
+  }, [filter, sort]);
+
+  useEffect(() => {
+    handleReset();
+  }, []);
+
+  return {
+    show,
+    setShow,
+    toggleShow,
+    sort,
+    handleSort,
+    handleSearch,
+    handleReset,
+    filter,
+    setFilter,
+    searchTerm,
+    setSearchTerm,
+    handleSubmit,
+  };
+}
+```  
