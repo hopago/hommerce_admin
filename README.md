@@ -1056,3 +1056,174 @@ export function useFilter<T>(props: UseFilterProps<T>) {
   };
 }
 ```  
+
+## 도서 정보 및 수정  
+### 기본 사용법  
+이미지 업로드 및 삭제는 이미지 업로드 호버 컨텐츠를 클릭/우클릭하여 가능합니다  
+로직 처리 방식: uploadthing Webhook과 server-actions
+
+![App screenshot](https://i.imgur.com/QjIRZbz.png)  
+![App screenshot](https://i.imgur.com/ju4jZou.png)
+
+## Features
+### /books/[bookId]
+    1. ISR  
+    2. 웹 훅 연동 이미지 업로드 및 삭제
+### page.tsx  
+``` javascript
+export const preload = (bookId: string) => {
+  void getBook(bookId);
+};
+
+export const getBook = async (bookId: string) => {
+  try {
+    const book = await getSingleBook(bookId);
+
+    return book;
+  } catch (err) {
+    const error = err as HttpError;
+    const status = error.status;
+
+    if (status) {
+      switch (status) {
+        case 400:
+          throw new Error("책 아이디를 받지 못했어요. 다시 시도하시겠어요?");
+        case 404:
+          throw new Error("해당 책 아이디로 책을 찾지 못했습니다.");
+        case 500:
+          throw new Error("서버 에러입니다. 잠시 후 다시 시도해주세요.");
+        default:
+          throw new Error("서버 에러입니다. 잠시 후 다시 시도해주세요.");
+      }
+    } else {
+      throw new Error("서버 에러입니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+};
+```  
+##### **ISR & SSR**
+- **Preloading Data**: waterfalls를 방지하고 병렬 데이터 가져오기를 최적화하기 위해 preload 기능 생성
+##### **개선점**
+- **에러처리 방식**: err instanceof ServerError를 사용하던 도중 Symbol을 읽어오지 못하는 에러가 발생하여 서버 코드에 따라 에러를 하드 코딩하여 throw 함  
+###### **서버 사이드 에러 핸들링**  
+  
+**error.tsx**  
+
+![App screenshot](https://i.imgur.com/T0fUTDw.png)  
+
+### Mutate Image  
+###### 설계  
+![App screenshot](https://i.imgur.com/LG6cehY.png)  
+###### **업로드 로직**
+
+구현상 가장 문제가 됐던 부분은 uploadthing의 공식 문서에서 input의 files값은 어떻게 handle 하는지 정확하게 나와있지 않아 이미지 컨테이너를 form 태그로 만들고 input의 change event를 감지하여 form의 submit event를 강제 호출하는 것이었습니다.
+
+``` javascript
+// actions/utApi.ts
+"use server";
+
+import { UTApi } from "uploadthing/server";
+
+export async function uploadFiles(formData: FormData) {
+  const utApi = new UTApi();
+
+  try {
+    const files = formData.getAll("files");
+    const response = await utApi.uploadFiles(files as File[]);
+    const urls = response.map((res) => res.data?.url);
+
+    return urls;
+  } catch (err: unknown) {
+    throw err;
+  }
+}
+```
+``` javascript
+// use-post-image.ts
+export const usePostImage = ({
+  bookId,
+  formRef,
+}: {
+  bookId: string;
+  formRef: RefObject<HTMLFormElement>;
+}) => {
+  const [imageUrls, setImageUrls] = useState<(string | undefined)[] | null>(
+    null
+  );
+  const [isUploadSuccess, setIsUploadSuccess] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
+  const displayError = (err: unknown) => {
+    const errorMessage =
+      err instanceof UploadThingError
+        ? `이미지를 게시 하던 중 에러가 발생했어요.\n${err.code}: ${err.message}`
+        : "이미지를 게시 하던 중 에러가 발생했어요.";
+    toast.error(errorMessage);
+  };
+
+  // Uploadthing 업로드 로직, 성공 시 setIsUploadSuccess(true)
+  const processUpload = async (formData: FormData) => {
+    if (!formData) return;
+
+    try {
+      const images = await uploadFiles(formData);
+
+      if (images.length) {
+        setImageUrls(images);
+        setIsUploadSuccess(true);
+      }
+    } catch (err) {
+      setIsUploadSuccess(false);
+      displayError(err);
+    }
+  };
+
+  // hook의 props 중 formRef을 활용하여 formData를 받음
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    if (e) e.preventDefault();
+    if (!formRef.current) return;
+
+    setIsUploadSuccess(false);
+
+    const formData = new FormData(e?.currentTarget ?? formRef.current);
+
+    await processUpload(formData);
+  };
+
+  // handleFileChange에선 파일 갯수의 변화를 감지하여 handleSubmit()을 호출
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleSubmit();
+    }
+  };
+
+  // uploadthing url 생성 감지 (isUploadSuccess) 후 DB 업데이트
+  // pending 상태, DB 업로드 이후 종료
+  useEffect(() => {
+    const updateBook = async () => {
+      if (!imageUrls || !isUploadSuccess) return;
+      setIsPending(true);
+
+      try {
+        await updateActions({ bookId, images: imageUrls });
+        toast.message("이미지 업로드를 성공적으로 마쳤어요.");
+      } catch (err) {
+        const message = handleError(err, "도서");
+        toast.error(message);
+      } finally {
+        setIsPending(false);
+        setImageUrls(null);
+      }
+    };
+
+    updateBook();
+  }, [bookId, imageUrls, isUploadSuccess]);
+
+  return {
+    isPending,
+    handleFileChange,
+    handleSubmit,
+  };
+};
+
+```  
