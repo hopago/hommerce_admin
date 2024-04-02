@@ -265,8 +265,8 @@ export default function ApiModal() {
 책이나 작가 이미지 등 이미지가 있는 경우가 매우 흔하다.  
 이미지가 있을 경우에는 API_CONSTANTS에 hasImage 프로퍼티(optional)를 true로 설정 후 활용하였다.
   
-  ![App screenshot](https://i.imgur.com/71I50Py.png)
-오른쪽 카메라 아이콘을 클릭 시 이미지 업로드가 가능하다.  
+  ![App screenshot](https://i.imgur.com/71I50Py.png)  
+오른쪽 카메라 아이콘 클릭 시 이미지 업로드가 가능하다.  
 
 ![App screenshot](https://i.imgur.com/twBEkhP.png)  
 이미지 업로드 후 모달창을 닫을 때 이미지 파일을 유지/삭제할지 확인한다.  
@@ -447,6 +447,129 @@ export const useBodyInput = create<CreatorUseBodyInput>((set) => ({
 }));
 
 ```
-
-# 유저 debounced 검색
+# Users & Pagination & Reference Data Table
 ## 기본 사용법
+
+![App screenshot](https://i.imgur.com/HX7MY0V.png)  
+![App screenshot](https://i.imgur.com/s0JXZRv.png)  
+![App screenshot](https://i.imgur.com/xq7XP0P.png)  
+## 구현 로직  
+### 유저 debounced 검색  
+인풋값 세팅 로직
+``` javascript
+// use-debounced-search.ts
+
+export const useDebouncedSearch = () => {
+  // 인풋값 핸들링
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // searchTerm이 바뀌면 useDebounce에 전달하여 0.75초 지연 후 인풋값 리턴
+  const debouncedSearchTerm = useDebounce({ value: searchTerm, delay: 750 });
+
+  return {
+    debouncedSearchTerm,
+    handleChange,
+    searchTerm,
+    setSearchTerm,
+  };
+};
+
+```  
+데이터 fetching 로직  
+```javascript
+// use-search-form.ts
+
+export const useSearchUserForm = () => {
+  const queryClient = useQueryClient();
+
+  // debouncedSearchTerm을 받아온다
+  const { debouncedSearchTerm, searchTerm, setSearchTerm, handleChange } =
+    useDebouncedSearch();
+
+  // debouncedSearchTerm 쿼리키 세팅, 값이 바뀔 때 마다 새로 fetching
+  // 검색어를 지울 경우 다시 요청을 보내지 않는다
+  const {
+    data: searchResults,
+    error,
+    isError,
+    isLoading,
+  } = useQuery<IUser[]>({
+    queryKey: [QueryKeys.USER_SEARCH, debouncedSearchTerm],
+    queryFn: () => fetchUserBySearchTerm({ searchTerm: debouncedSearchTerm }),
+    staleTime: daysToMs(1),
+    gcTime: daysToMs(3),
+    enabled: !!debouncedSearchTerm,
+  });
+
+  // 검색어가 비어있을 경우 쿼리 초기화, 이전 검색 결과 랜더링 방지
+  useEffect(() => {
+    if (debouncedSearchTerm.trim() === "") {
+      queryClient.resetQueries({
+        queryKey: [QueryKeys.USER_SEARCH, debouncedSearchTerm],
+      });
+    }
+  }, [debouncedSearchTerm]);
+
+  // 에러 및 서버 상태 제공
+  useHandleError({ error, isError, fieldName: "유저" });
+
+  return {
+    searchTerm,
+    setSearchTerm,
+    handleChange,
+    isLoading,
+    searchResults,
+    error,
+  };
+};
+
+```  
+``` javascript
+// UsersSearch.tsx
+
+  // useOutsideClick 연동, container 밖 클릭시 검색창이 닫히고 검색 상태 초기화
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
+
+  const pathname = getCurrPathname();
+  if (!pathname) return null;
+
+  // 1차 관리 페이지 이동, 해당 페이지에선 선택된 유저가 있는지 확인 후 루트를 결정
+  const onClick = () => {
+    router.push(`/users/management`);
+  };
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    handleChange,
+    isLoading,
+    searchResults,
+    error,
+  } = useSearchUserForm();
+
+  // 검색 결과에서 관리 대상으로 선택된 유저들
+  const { usernames, errMsg, error: manageError } = useManageUsers();
+
+  // 검색 결과를 받아 선택된 유저들을 검색 결과에서 filter
+  const filteredResults = useFilterResults({
+    searchResults,
+    usernames,
+    searchTerm,
+  });
+
+  // containerRef을 받아 마우스 이벤트 감지
+  useOutsideClick({ ref: containerRef, setSearchTerm });
+
+  // 에러 상황 시 토스트 창으로 UI 제공
+  useEffect(() => {
+    if (manageError && errMsg) {
+      toast.error(errMsg);
+    }
+  }, [manageError, errMsg]);
+```
