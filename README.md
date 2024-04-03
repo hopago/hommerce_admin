@@ -1374,6 +1374,18 @@ export function getDifferences(
 }
 
 ```  
+
+### /books/edit  
+# 기본 사용법  
+
+##### 위 유저 검색과 동일한 debounced 훅을 사용하였고 페이지네이션의 filter & sort 훅을 재활용 하였습니다.  
+
+![App screenshot](https://i.imgur.com/vAk2AbR.png)  
+
+![App screenshot](https://i.imgur.com/2GkAKH1.png)  
+
+![App screenshot](https://i.imgur.com/axE7r3f.png)
+
 ### 404.tsx  
 ![App screenshot](https://i.imgur.com/pspxr1c.png)  
 
